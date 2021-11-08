@@ -84,7 +84,7 @@ static int sqlcipher_sodium_hmacsha512(unsigned char *hmac_key, int key_sz, unsi
   return SQLITE_OK;
 }
 
-static int sqlcipher_sodium_hmac(void *ctx, unsigned char *hmac_key, int key_sz, unsigned char *in, int in_sz, unsigned char *in2, int in2_sz, unsigned char *out) {
+static int sqlcipher_sodium_hmac(void *ctx, int algorithm, unsigned char *hmac_key, int key_sz, unsigned char *in, int in_sz, unsigned char *in2, int in2_sz, unsigned char *out) {
   switch (algorithm) {
     case SQLCIPHER_HMAC_SHA256:
       return sqlcipher_sodium_hmacsha256(hmac_key, key_sz, in, in_sz, in2, in2_sz, out);
@@ -95,8 +95,8 @@ static int sqlcipher_sodium_hmac(void *ctx, unsigned char *hmac_key, int key_sz,
   }
 }
 
-static int sqlcipher_sodium_kdf(void *ctx, const unsigned char *pass, int pass_sz, unsigned char* salt, int salt_sz, int workfactor, int key_sz, unsigned char *key) {
-  if (crypto_pwhash(key, key_sz pass, pass_sz, salt, crypto_pwhash_OPSLIMIT_INTERACTIVE, crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_ARGON2I13) != 0) return SQLITE_ERROR;
+static int sqlcipher_sodium_kdf(void *ctx, int algorithm, const unsigned char *pass, int pass_sz, unsigned char* salt, int salt_sz, int workfactor, int key_sz, unsigned char *key) {
+  if (crypto_pwhash(key, key_sz, pass, pass_sz, salt, crypto_pwhash_OPSLIMIT_INTERACTIVE, crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_ARGON2I13) != 0) return SQLITE_ERROR;
   return SQLITE_OK;
 }
 

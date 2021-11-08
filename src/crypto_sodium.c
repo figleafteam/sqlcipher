@@ -117,8 +117,15 @@ static int sqlcipher_sodium_get_block_sz(void *ctx) {
   return 16;    // Not important, can be anything.
 }
 
-static int sqlcipher_sodium_get_hmac_sz(void *ctx) {
-  return crypto_auth_hmacsha512_BYTES;
+static int sqlcipher_sodium_get_hmac_sz(void *ctx, int algorithm) {
+  switch (algorithm) {
+    case SQLCIPHER_HMAC_SHA256:
+      return crypto_auth_hmacsha256_BYTES;
+    case SQLCIPHER_HMAC_SHA512:
+      return crypto_auth_hmacsha512_BYTES;
+    default:
+      return 0;
+  }
 }
 
 static int sqlcipher_sodium_ctx_init(void **ctx) {

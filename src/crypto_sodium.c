@@ -37,7 +37,8 @@
 #include <sodium.h>
 
 static int sqlcipher_sodium_activate(void *ctx) {
-  return sodium_init() == 0 ? SQLITE_OK : SQLITE_ERROR;
+  // sodium_init() returns 0 on success, -1 on failure, and 1 if the library had already been initialized.
+  return sodium_init() == -1 ? SQLITE_ERROR : SQLITE_OK;
 }
 
 static int sqlcipher_sodium_deactivate(void *ctx) {

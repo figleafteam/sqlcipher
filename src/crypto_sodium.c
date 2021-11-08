@@ -36,6 +36,14 @@
 #include "sqlcipher.h"
 #include <sodium.h>
 
+static const char* sqlcipher_sodium_get_provider_name(void *ctx) {
+  return "libsodium";
+}
+
+static const char* sqlcipher_sodium_get_provider_version(void *ctx) {
+  return SODIUM_VERSION_STRING;
+}
+
 static int sqlcipher_sodium_activate(void *ctx) {
   // sodium_init() returns 0 on success, -1 on failure, and 1 if the library had already been initialized.
   return sodium_init() == -1 ? SQLITE_ERROR : SQLITE_OK;
@@ -45,27 +53,14 @@ static int sqlcipher_sodium_deactivate(void *ctx) {
   return SQLITE_OK;
 }
 
-static int sqlcipher_sodium_add_random(void *ctx, void *buffer, int length) {
-  randombytes_stir();
-  return SQLITE_OK;
-}
-
-/* generate a defined number of random bytes */
 static int sqlcipher_sodium_random(void *ctx, void *buffer, int length) {
   randombytes_buf(buffer, length);
   return SQLITE_OK;
 }
 
-static const char* sqlcipher_sodium_get_provider_name(void *ctx) {
-  return "libsodium";
-}
-
-static const char* sqlcipher_sodium_get_provider_version(void *ctx) {
-  return SODIUM_VERSION_STRING;
-}
-
-static int sqlcipher_sodium_get_hmac_sz(void *ctx) {
-  return crypto_auth_hmacsha512_BYTES;
+static int sqlcipher_sodium_add_random(void *ctx, void *buffer, int length) {
+  randombytes_stir();
+  return SQLITE_OK;
 }
 
 static int sqlcipher_sodium_hmac(void *ctx, unsigned char *hmac_key, int key_sz, unsigned char *in, int in_sz, unsigned char *in2, int in2_sz, unsigned char *out) {
@@ -106,10 +101,6 @@ static int sqlcipher_sodium_cipher(void *ctx, int mode, unsigned char *key, int 
   return SQLITE_OK;
 }
 
-static int sqlcipher_sodium_set_cipher(void *ctx, const char *cipher_name) {
-  return SQLITE_OK;
-}
-
 static const char* sqlcipher_sodium_get_cipher(void *ctx) {
   return crypto_stream_PRIMITIVE;
 }
@@ -126,6 +117,10 @@ static int sqlcipher_sodium_get_block_sz(void *ctx) {
   return 16;    // Not important, can be anything.
 }
 
+static int sqlcipher_sodium_get_hmac_sz(void *ctx) {
+  return crypto_auth_hmacsha512_BYTES;
+}
+
 static int sqlcipher_sodium_ctx_init(void **ctx) {
   return SQLITE_OK;
 }
@@ -139,11 +134,12 @@ static int sqlcipher_sodium_fips_status(void *ctx) {
 }
 
 int sqlcipher_sodium_setup(sqlcipher_provider *p) {
-  p->activate = sqlcipher_sodium_activate;
-  p->deactivate = sqlcipher_sodium_deactivate;
   p->get_provider_name = sqlcipher_sodium_get_provider_name;
   p->get_provider_version = sqlcipher_sodium_get_provider_version;
+  p->activate = sqlcipher_sodium_activate;
+  p->deactivate = sqlcipher_sodium_deactivate;
   p->random = sqlcipher_sodium_random;
+  p->add_random = sqlcipher_sodium_add_random;
   p->hmac = sqlcipher_sodium_hmac;
   p->kdf = sqlcipher_sodium_kdf;
   p->cipher = sqlcipher_sodium_cipher;
@@ -154,7 +150,6 @@ int sqlcipher_sodium_setup(sqlcipher_provider *p) {
   p->get_hmac_sz = sqlcipher_sodium_get_hmac_sz;
   p->ctx_init = sqlcipher_sodium_ctx_init;
   p->ctx_free = sqlcipher_sodium_ctx_free;
-  p->add_random = sqlcipher_sodium_add_random;
   p->fips_status = sqlcipher_sodium_fips_status;
   return SQLITE_OK;
 }

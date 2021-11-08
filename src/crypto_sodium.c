@@ -63,21 +63,37 @@ static int sqlcipher_sodium_add_random(void *ctx, void *buffer, int length) {
   return SQLITE_OK;
 }
 
-static int sqlcipher_sodium_hmac(void *ctx, unsigned char *hmac_key, int key_sz, unsigned char *in, int in_sz, unsigned char *in2, int in2_sz, unsigned char *out) {
-  crypto_auth_hmacsha512_state state = { 0 };
-  if (crypto_auth_hmacsha512_init(&state, hmac_key, key_sz) != 0)
-    return SQLITE_ERROR;
-  if (in && in_sz > 0) {
-    if (crypto_auth_hmacsha512_update(&state, in, in_sz) != 0)
-      return SQLITE_ERROR;
-  }
-  if (in2 && in2_sz > 0) {
-    if (crypto_auth_hmacsha512_update(&state, in2, in2_sz) != 0)
-      return SQLITE_ERROR;
-  }
-  if (crypto_auth_hmacsha512_final(&state, out) != 0)
-    return SQLITE_ERROR;
+static int sqlcipher_sodium_hmacsha256(unsigned char *hmac_key, int key_sz, unsigned char *in, int in_sz, unsigned char *in2, int in2_sz, unsigned char *out) {
+  crypto_auth_hmacsha256_state state = { 0 };
+
+  if (crypto_auth_hmacsha256_init(&state, hmac_key, key_sz) != 0) return SQLITE_ERROR;
+  if (in != NULL && in_sz > 0 && crypto_auth_hmacsha256_update(&state, in, in_sz) != 0) return SQLITE_ERROR;
+  if (in2 != NULL && in2_sz > 0 && crypto_auth_hmacsha256_update(&state, in2, in2_sz) != 0) return SQLITE_ERROR;
+  if (crypto_auth_hmacsha256_final(&state, out) != 0) return SQLITE_ERROR;
+
   return SQLITE_OK;
+}
+
+static int sqlcipher_sodium_hmacsha512(unsigned char *hmac_key, int key_sz, unsigned char *in, int in_sz, unsigned char *in2, int in2_sz, unsigned char *out) {
+  crypto_auth_hmacsha512_state state = { 0 };
+
+  if (crypto_auth_hmacsha512_init(&state, hmac_key, key_sz) != 0) return SQLITE_ERROR;
+  if (in != NULL && in_sz > 0 && crypto_auth_hmacsha512_update(&state, in, in_sz) != 0) return SQLITE_ERROR;
+  if (in2 != NULL && in2_sz > 0 && crypto_auth_hmacsha512_update(&state, in2, in2_sz) != 0) return SQLITE_ERROR;
+  if (crypto_auth_hmacsha512_final(&state, out) != 0) return SQLITE_ERROR;
+
+  return SQLITE_OK;
+}
+
+static int sqlcipher_sodium_hmac(void *ctx, unsigned char *hmac_key, int key_sz, unsigned char *in, int in_sz, unsigned char *in2, int in2_sz, unsigned char *out) {
+  switch (algorithm) {
+    case SQLCIPHER_HMAC_SHA256:
+      return sqlcipher_sodium_hmacsha256(hmac_key, key_sz, in, in_sz, in2, in2_sz, out);
+    case SQLCIPHER_HMAC_SHA512:
+      return sqlcipher_sodium_hmacsha512(hmac_key, key_sz, in, in_sz, in2, in2_sz, out);
+    default:
+      return SQLITE_ERROR;
+  }
 }
 
 static int sqlcipher_sodium_kdf(void *ctx, const unsigned char *pass, int pass_sz, unsigned char* salt, int salt_sz, int workfactor, int key_sz, unsigned char *key) {

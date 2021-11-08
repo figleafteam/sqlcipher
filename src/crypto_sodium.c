@@ -129,7 +129,8 @@ static int sqlcipher_sodium_get_iv_sz(void *ctx) {
 }
 
 static int sqlcipher_sodium_get_block_sz(void *ctx) {
-  return 16;    // Not important, can be anything.
+  // Concrete value is not important so use AES-256 block size
+  return 16;
 }
 
 static int sqlcipher_sodium_get_hmac_sz(void *ctx, int algorithm) {

@@ -60,6 +60,10 @@ static const char* sqlcipher_sodium_get_provider_name(void *ctx) {
   return "libsodium";
 }
 
+static const char* sqlcipher_sodium_get_provider_version(void *ctx) {
+  return SODIUM_VERSION_STRING;
+}
+
 static int sqlcipher_sodium_get_hmac_sz(void *ctx) {
   return crypto_auth_hmacsha512_BYTES;
 }
@@ -144,14 +148,11 @@ static int sqlcipher_sodium_fips_status(void *ctx) {
   return 0;
 }
 
-static const char* sqlcipher_sodium_get_provider_version(void *ctx) {
-  return SODIUM_VERSION_STRING;
-}
-
 int sqlcipher_sodium_setup(sqlcipher_provider *p) {
   p->activate = sqlcipher_sodium_activate;
   p->deactivate = sqlcipher_sodium_deactivate;
   p->get_provider_name = sqlcipher_sodium_get_provider_name;
+  p->get_provider_version = sqlcipher_sodium_get_provider_version;
   p->random = sqlcipher_sodium_random;
   p->hmac = sqlcipher_sodium_hmac;
   p->kdf = sqlcipher_sodium_kdf;
@@ -165,7 +166,6 @@ int sqlcipher_sodium_setup(sqlcipher_provider *p) {
   p->ctx_free = sqlcipher_sodium_ctx_free;
   p->add_random = sqlcipher_sodium_add_random;
   p->fips_status = sqlcipher_sodium_fips_status;
-  p->get_provider_version = sqlcipher_sodium_get_provider_version;
   return SQLITE_OK;
 }
 

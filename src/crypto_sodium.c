@@ -96,23 +96,12 @@ static int sqlcipher_sodium_hmac(void *ctx, unsigned char *hmac_key, int key_sz,
 }
 
 static int sqlcipher_sodium_kdf(void *ctx, const unsigned char *pass, int pass_sz, unsigned char* salt, int salt_sz, int workfactor, int key_sz, unsigned char *key) {
-  // Salt is smaller than crypto_pwhash_scryptsalsa208sha256_SALTBYTES therefore we repeat supplied salt multiple times.
-  char salt2[crypto_pwhash_scryptsalsa208sha256_SALTBYTES];
-  for (int i = 0; i < sizeof(salt2);) {
-    int n = MIN(sizeof(salt2) - i, salt_sz);
-    if (n > 0)
-      memcpy(&salt2[i], salt, n);
-    i += n;
-  }
-  if (crypto_pwhash_scryptsalsa208sha256(key, key_sz, pass, pass_sz, salt2, workfactor,
-      crypto_pwhash_MEMLIMIT_INTERACTIVE) != 0)
-    return SQLITE_ERROR;
+  if (crypto_pwhash(key, key_sz pass, pass_sz, salt, crypto_pwhash_OPSLIMIT_INTERACTIVE, crypto_pwhash_MEMLIMIT_INTERACTIVE, crypto_pwhash_ALG_ARGON2I13) != 0) return SQLITE_ERROR;
   return SQLITE_OK;
 }
 
 static int sqlcipher_sodium_cipher(void *ctx, int mode, unsigned char *key, int key_sz, unsigned char *iv, unsigned char *in, int in_sz, unsigned char *out) {
-  if (crypto_stream_xor(out, in, in_sz, iv, key) != 0)
-    return SQLITE_ERROR;
+  if (crypto_stream_xor(out, in, in_sz, iv, key) != 0) return SQLITE_ERROR;
   return SQLITE_OK;
 }
 

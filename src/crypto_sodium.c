@@ -127,12 +127,10 @@ static int sqlcipher_sodium_get_block_sz(void *ctx) {
 }
 
 static int sqlcipher_sodium_ctx_init(void **ctx) {
-  sqlcipher_sodium_activate(NULL);
   return SQLITE_OK;
 }
 
 static int sqlcipher_sodium_ctx_free(void **ctx) {
-  sqlcipher_sodium_deactivate(NULL);
   return SQLITE_OK;
 }
 

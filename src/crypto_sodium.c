@@ -126,14 +126,6 @@ static int sqlcipher_sodium_get_block_sz(void *ctx) {
   return 16;    // Not important, can be anything.
 }
 
-static int sqlcipher_sodium_ctx_copy(void *target_ctx, void *source_ctx) {
-  return SQLITE_OK;
-}
-
-static int sqlcipher_sodium_ctx_cmp(void *c1, void *c2) {
-  return c1 == c2;
-}
-
 static int sqlcipher_sodium_ctx_init(void **ctx) {
   sqlcipher_sodium_activate(NULL);
   return SQLITE_OK;

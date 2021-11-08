@@ -31,7 +31,6 @@
 /* BEGIN SQLCIPHER */
 #ifdef SQLITE_HAS_CODEC
 #ifdef SQLCIPHER_CRYPTO_SODIUM
-#include "sqliteInt.h"
 #include "crypto.h"
 #include "sqlcipher.h"
 #include <sodium.h>

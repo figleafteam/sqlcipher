@@ -149,7 +149,8 @@ CRYPTOLIBOBJ = \
   crypto_openssl.lo \
   crypto_libtomcrypt.lo \
   crypto_nss.lo \
-  crypto_cc.lo
+  crypto_cc.lo \
+  crypto_sodium.lo
 
 CRYPTOSRC = \
   $(TOP)/src/crypto.h \
@@ -159,7 +160,8 @@ CRYPTOSRC = \
 	$(TOP)/src/crypto_libtomcrypt.c \
 	$(TOP)/src/crypto_nss.c \
 	$(TOP)/src/crypto_openssl.c \
-	$(TOP)/src/crypto_cc.c
+	$(TOP)/src/crypto_cc.c \
+	$(TOP)/src/crypto_sodium.c
 
 # END CRYPTO
 
@@ -454,7 +456,7 @@ TESTSRC = \
   $(TOP)/ext/fts3/fts3_term.c \
   $(TOP)/ext/fts3/fts3_test.c  \
   $(TOP)/ext/session/test_session.c \
-  $(TOP)/ext/rbu/test_rbu.c 
+  $(TOP)/ext/rbu/test_rbu.c
 
 # Statically linked extensions
 #
@@ -835,6 +837,9 @@ crypto_libtomcrypt.lo:	$(TOP)/src/crypto_libtomcrypt.c $(HDR)
 	$(LTCOMPILE) -c $(TOP)/src/crypto_libtomcrypt.c
 crypto_cc.lo:	$(TOP)/src/crypto_cc.c $(HDR)
 	$(LTCOMPILE) -c $(TOP)/src/crypto_cc.c
+crypto_sodium.lo:	$(TOP)/src/crypto_sodium.c $(HDR)
+	$(LTCOMPILE) -c $(TOP)/src/crypto_sodium.c
+
 # END CRYPTO
 
 # Rules to build individual *.o files from files in the src directory.
@@ -1494,7 +1499,7 @@ tcl_install:	lib_install libtclsqlite3.la pkgIndex.tcl
 	rm -f $(DESTDIR)$(TCLLIBDIR)/libtclsqlite3.la $(DESTDIR)$(TCLLIBDIR)/libtclsqlite3.a
 	$(INSTALL) -m 0644 pkgIndex.tcl $(DESTDIR)$(TCLLIBDIR)
 
-clean:	
+clean:
 	rm -f *.lo *.la *.o sqlcipher$(TEXE) libsqlcipher.la
 	rm -f sqlite3.h opcodes.*
 	rm -rf .libs .deps

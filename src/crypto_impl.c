@@ -357,10 +357,10 @@ void sqlcipher_mlock(void *ptr, u64 sz) {
 #elif defined(_WIN32)
 #if !(defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP || WINAPI_FAMILY == WINAPI_FAMILY_APP))
   int rc;
-  sqlcipher_log(SQLCIPHER_LOG_TRACE, "sqlcipher_mem_lock: calling VirtualLock(%p,%lu)", ptr, sz);
+  sqlcipher_log(SQLCIPHER_LOG_TRACE, "sqlcipher_mem_lock: calling VirtualLock(%p,%llu)", ptr, sz);
   rc = VirtualLock(ptr, sz);
   if(rc==0) {
-    sqlcipher_log(SQLCIPHER_LOG_ERROR, "sqlcipher_mem_lock: VirtualLock(%p,%lu) returned %d LastError=%d", ptr, sz, rc, GetLastError());
+    sqlcipher_log(SQLCIPHER_LOG_ERROR, "sqlcipher_mem_lock: VirtualLock(%p,%llu) returned %d LastError=%d", ptr, sz, rc, GetLastError());
   }
 #endif
 #endif
@@ -384,10 +384,10 @@ void sqlcipher_munlock(void *ptr, u64 sz) {
 #elif defined(_WIN32)
 #if !(defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP || WINAPI_FAMILY == WINAPI_FAMILY_APP))
   int rc;
-  sqlcipher_log(SQLCIPHER_LOG_TRACE, "sqlcipher_mem_lock: calling VirtualUnlock(%p,%lu)", ptr, sz);
+  sqlcipher_log(SQLCIPHER_LOG_TRACE, "sqlcipher_mem_lock: calling VirtualUnlock(%p,%llu)", ptr, sz);
   rc = VirtualUnlock(ptr, sz);
   if(!rc) {
-    sqlcipher_log(SQLCIPHER_LOG_ERROR, "sqlcipher_mem_unlock: VirtualUnlock(%p,%lu) returned %d LastError=%d", ptr, sz, rc, GetLastError());
+    sqlcipher_log(SQLCIPHER_LOG_ERROR, "sqlcipher_mem_unlock: VirtualUnlock(%p,%llu) returned %d LastError=%d", ptr, sz, rc, GetLastError());
   }
 #endif
 #endif

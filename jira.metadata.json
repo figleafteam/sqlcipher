@@ -1,0 +1,12 @@
+{
+	"repo_name": "sqlcipher",
+	"github_org": "figleafteam",  
+	"environment": ["production"],
+	"jira_project": "PSS",
+	"jira_domain": "https://intxprivacynow.atlassian.net/",
+	"jira_issue_type": "task",
+	"team_company": "Aura",
+	"team_name": "Privacy Services Squad",
+	"team_email": "privacy-services-squad@aura.com",
+	"team_slack": "#ps-squad-public"
+}
